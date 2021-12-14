@@ -20,7 +20,7 @@ public final class ModelMapper {
     }
 
     @NotNull
-    public static SubscriptionEntity toEntity(@NotNull String name, @NotNull String link, @NotNull Channel channel) {
+    public static SubscriptionEntity toSubscriptionEntity(@NotNull String name, @NotNull String link, @NotNull Channel channel) {
         return new SubscriptionEntity()
                 .setName(name)
                 .setLink(link)

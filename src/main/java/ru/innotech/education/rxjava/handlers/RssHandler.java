@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -18,12 +19,17 @@ import reactor.core.publisher.Mono;
 import ru.innotech.education.rxjava.models.ErrorResponse;
 import ru.innotech.education.rxjava.models.Item;
 import ru.innotech.education.rxjava.models.SubscriptionRequest;
+import ru.innotech.education.rxjava.service.ModelMapper;
+import ru.innotech.education.rxjava.service.SubsServ;
 
 @Tag(name = "RSS operations")
 @Service
 @RequiredArgsConstructor
 public class RssHandler {
-    private final WebClient webClient;
+    private final WebClient webClient = WebClient.create("http://localhost:8080");
+
+    @Autowired
+    private SubsServ subsServ;
 
     @NotNull
     @Operation(
@@ -35,7 +41,19 @@ public class RssHandler {
             }
     )
     public Mono<ServerResponse> subscribe(@NotNull ServerRequest request) {
-        return Mono.error(NotImplementedException::new);
+//
+//        Mono<SubscriptionRequest> requestMono = request.bodyToMono(SubscriptionRequest.class);
+//
+//        Mono<SubscriptionEntity> entityMono = requestMono.
+//
+        request.bodyToMono(SubscriptionRequest.class)
+                .flatMap(sub -> ServerResponse.ok().bodyValue(subsServ.save(sub.getLink()))).subscribe();
+
+
+        return request.bodyToMono(SubscriptionRequest.class)
+                .flatMap(sub -> ServerResponse.ok().bodyValue(subsServ.save(sub.getLink())));
+
+        //Mono.error(NotImplementedException::new);
     }
 
     @NotNull
